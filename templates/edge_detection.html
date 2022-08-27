@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+
+            <form action="/edge_detection/preview" method="post" enctype="multipart/form-data" id="options-form">
+
+                <div class="row">
+                    <h1>Unpuzzler</h1>
+
+                    <div class="col-lg mb-5">
+                        <img src="{{image}}" class="w-100" id="preview-image"/>
+                    </div>
+
+                    <div class="col-lg">
+
+                        <div class="mb-5">
+                            <select class="form-select" selected="{{ options['algorithm'] }}"
+                                    aria-label="Default select example" name="algorithm"
+                                    id="algorithms-select" onchange="algorithmSelectionChanged()">
+
+                                <option value="k-means" {{
+                                "selected" if options["algorithm"] == "k-means" else "" }}>k-Means</option>
+                                <option value="color-masking" {{
+                                "selected" if options["algorithm"] == "color-masking" else "" }}>Color Masking</option>
+                            </select>
+                        </div>
+
+                        <div class="mx-2">
+
+                            <div class="mb-3" id="k-div">
+                                <label for="k-range" class="form-label">K = <span id="k-value"></span></label>
+                                <input type="range" class="form-range" min="1" max="20" value="{{ options['k'] }}"
+                                       id="k-range" name="k"
+                                       oninput="onSliderValueChanged()">
+                            </div>
+
+                            <div class="mb-5" id="attempts-div">
+                                <label for="attempt-range" class="form-label">Attempts = <span
+                                        id="attempts-value"></span></label>
+                                <input type="range" class="form-range" min="1" max="20"
+                                       value="{{ options['attempts'] }}" name="attempts"
+                                       id="attempt-range" oninput="onSliderValueChanged()">
+                            </div>
+
+                            <div id="color-range-low-div" class="mb-3">
+                                <label for="color-range-low" class="form-label">Color Range Low = <span
+                                        id="colorRangeLow-value"></span></label>
+                                <input type="range" class='form-range' name="color-low" id="color-range-low" min="0"
+                                       max="255" value="{{ options['low'] }}" oninput="onSliderValueChanged()">
+                            </div>
+
+                            <div id="color-range-high-div" class="mb-3">
+                                <label for="color-range-high" class="form-label">Color Range High = <span
+                                        id="colorRangeHigh-value"></span></label>
+                                <input type="range" class='form-range' name="color-high" id="color-range-high" min="0"
+                                       max="255" value="{{ options['high'] }}" oninput="onSliderValueChanged()">
+                            </div>
+
+                            <div id="block_size_div" class="mb-5">
+                                <label for="block_size" class="form-label">Block Size = <span
+                                        id="blockSizeVal"></span></label>
+                                <input type="range" class='form-range' name="block-size" id="block_size" min="0"
+                                       max="30" value="{{ options['block_size'] }}" oninput="onSliderValueChanged()">
+                            </div>
+
+                            <!--                            <div id="color-range-low-div" class="mb-3">-->
+                            <!--                                <label for="color-low" class="form-label">Color Low: </label>-->
+                            <!--                                <input type="color" id="color-low" name="color-low" class="w-100">-->
+                            <!--                            </div>-->
+
+                            <!--                            <div id="color-range-high-div" class="mb-5">-->
+                            <!--                                <label for="color-high" class="form-label">Color High: </label>-->
+                            <!--                                <input type="color" id="color-high" name="color-high" class="w-100">-->
+                            <!--                            </div>-->
+
+                            <div class="col">
+                                <button id="preview-button" onclick="preview()" class="btn btn-primary w-25">
+                                    Preview
+                                </button>
+                                <button type="submit" formaction="/edge_detection/reset" class="btn btn-primary w-25">
+                                    Reset
+                                </button>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary float-end w-25"
+                                formaction="/edge_detection/kmeans">Weiter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Divs
+    var kDiv = document.getElementById("k-div");
+    var attemptsDiv = document.getElementById("attempts-div");
+    var colorRangeLowDiv = document.getElementById("color-range-low-div");
+    var colorRangeHighDiv = document.getElementById("color-range-high-div");
+    var blockSizeDiv = document.getElementById("block_size_div")
+
+    // Selections
+    var algorithmsSelect = document.getElementById("algorithms-select");
+
+    // Inputs
+    var kInput = document.getElementById("k-range");
+    var attemptInput = document.getElementById("attempt-range");
+    var colorRangeLowInput = document.getElementById("color-range-low");
+    var colorRangeHighInput = document.getElementById("color-range-high");
+    var blockSizeValInput = document.getElementById("block_size");
+    var previewButton = document.getElementById("preview-button");
+
+    // Slider spans
+    var kValue = document.getElementById("k-value");
+    var attemptsValue = document.getElementById("attempts-value");
+    var colorRangeLowValue = document.getElementById("colorRangeLow-value");
+    var colorRangeHighValue = document.getElementById("colorRangeHigh-value");
+    var blockSizeVal = document.getElementById("blockSizeVal")
+
+    var optionsForm = document.getElementById("options-form");
+    var imageContainer = document.getElementById("image-container");
+    var previewImage = document.getElementById("preview-image");
+
+    /**
+     * Update value spans on slider change.
+     */
+    function onSliderValueChanged() {
+        kValue.innerHTML = kInput.value;
+        attemptsValue.innerHTML = attemptInput.value;
+        colorRangeLowValue.innerHTML = colorRangeLowInput.value;
+        colorRangeHighValue.innerHTML = colorRangeHighInput.value;
+        blockSizeVal.innerHTML = blockSizeValInput.value;
+    }
+
+    /**
+     * Resets all sliders.
+     */
+    function reset() {
+
+        // Reset sliders
+        kInput.value = "4";
+        attemptInput.value = "10";
+        colorRangeLowInput.value = "64";
+        colorRangeHighInput.value = "192";
+        blockSizeValInput.value = "9"
+
+        // Update values
+        onSliderValueChanged();
+    }
+
+    /**
+     * Toggles visibility of sliders, is called on change of algorithm selection.
+     */
+    function algorithmSelectionChanged() {
+
+        if (algorithmsSelect.value == "k-means") {
+            kDiv.style.display = "block";
+            kDiv.style.visibility = "visible";
+            attemptsDiv.style.display = "block";
+            attemptsDiv.style.visibility = "visible";
+            colorRangeLowDiv.style.display = "none";
+            colorRangeLowDiv.style.visibility = "hidden";
+            colorRangeHighDiv.style.display = "none";
+            colorRangeHighDiv.style.visibility = "hidden";
+            blockSizeDiv.style.display = "none";
+            blockSizeDiv.style.visibility = "hidden"
+
+        } else if (algorithmsSelect.value == "color-masking") {
+            kDiv.style.display = "none";
+            kDiv.style.visibility = "hidden";
+            attemptsDiv.style.display = "none";
+            attemptsDiv.style.visibility = "hidden";
+            colorRangeLowDiv.style.display = "block";
+            colorRangeLowDiv.style.visibility = "visible";
+            colorRangeHighDiv.style.display = "block";
+            colorRangeHighDiv.style.visibility = "visible";
+            blockSizeDiv.style.display = "block";
+            blockSizeDiv.style.visibility = "visible"
+        }
+    }
+
+    /**
+     *  Calls the `preview` function of the API.
+     */
+    async function preview() {
+
+        console.log("TODO: Set loading image here");
+        previewImage.src = null;
+
+        var data = {
+            "id": "{{ session['id'] }}",
+            "algorithm": algorithmsSelect.value,
+            "k": kInput.value,
+            "attempts": attemptInput.value,
+            "colorRangeLow": colorRangeLowInput.value,
+            "colorRangeHigh": colorRangeHighInput.value,
+            "blockSize": blockSizeValInput.value
+        };
+
+        fetch('http://localhost:5000/edge_detection/preview', {
+            method: 'POST',
+            body: JSON.stringify(data)
+        }).then(response => response.json()).then(data => {
+            previewImage.src = data.previewUrl;
+        })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
+    function preview() {
+        previewButton.innerHTML = "Loading ...";
+        previewImage.style.opacity = 0.2;
+        previewImage.style.filter = "grayscale(100%)";
+        optionsForm.submit();
+    }
+
+    // Main
+    algorithmSelectionChanged();
+    onSliderValueChanged();
+
+</script>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+
+            <div class="row">
+                <h1>Unpuzzler</h1>
+
+                <hr>
+
+                <form>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary w-50 m-3" formaction="/upload">
+                            Hochladen
+                        </button>
+                        <button type="submit" class="btn btn-primary w-50 m-3" formaction="/choose">
+                            Auswählen
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

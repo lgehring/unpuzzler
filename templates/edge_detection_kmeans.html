@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+            <form action="/edge_detection/kmeans/preview" method="post" enctype="multipart/form-data" id="options-form">
+                <div class="row">
+                    <h1>Unpuzzler</h1>
+                    <div class="col-lg mb-5">
+                        <img src="{{image}}" class="w-100" id="preview-image"/>
+                    </div>
+                    <div class="col-lg">
+                        <div class="row">
+                            <div>
+                                <input type="color" id="maskColor" name="maskColor"
+                                       value={{mask_color}}>
+                                <label for="maskColor">Mask Color</label>
+                            </div>
+                            <div>
+                                {% for option in options %}
+                                {%set checked_val=check_vals[loop.index0]%}
+                                <label class="btn btn-primary w-25 m-3"
+                                       style="background-color: rgb({{option[0]}}, {{option[1]}}, {{option[2]}}); border-color: rgb({{option[0]}}, {{option[1]}}, {{option[2]}})">
+                                    <input type="checkbox" autocomplete="off" value={{loop.index0}} name="color-box" {{
+                                    "checked" if checked_val else "" }} /> Check
+                                </label>
+                                {% endfor %}
+                            </div>
+
+                            <div id="block_size_div_kmeans" class="mb-5">
+                                <label for="block_size_kmeans" class="form-label">Block Size = <span id="block_size_val_kmeans"></span></label>
+                                <input type="range" class='form-range' name="block-size" id="block_size_kmeans" min="0"
+                                       max="30" value="{{ block_size }}" oninput="onSliderValueChanged()">
+                            </div>
+
+                            <div class="col">
+                                <button id="preview-button" onclick="preview()" class="btn btn-primary w-25 my-5">
+                                    Preview
+                                </button>
+                                <button type="submit" formaction="/edge_detection/kmeans/reset"
+                                        class="btn btn-primary w-25 my-5">
+                                    Reset
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary float-end w-25" formaction="/edge_detection/results" formmethod="get">
+                            Weiter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    var previewButton = document.getElementById("preview-button");
+    var optionsForm = document.getElementById("options-form");
+    var previewImage = document.getElementById("preview-image");
+
+    var blockSizeValInput2 = document.getElementById("block_size_kmeans");
+    var blockSizeVal2 = document.getElementById("block_size_val_kmeans");
+
+        function onSliderValueChanged() {
+        blockSizeVal2.innerHTML = blockSizeValInput2.value;
+    }
+
+
+    function preview() {
+        previewButton.innerHTML = "Loading ...";
+        previewImage.style.opacity = 0.2;
+        previewImage.style.filter = "grayscale(100%)";
+        optionsForm.submit();
+    }
+
+    onSliderValueChanged();
+
+</script>
+{% endblock %}

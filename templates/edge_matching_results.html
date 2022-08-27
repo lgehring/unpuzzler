@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+            <form action="/edge_matching" method="post" enctype="multipart/form-data" id="options-form">
+                <div class="row">
+                    <h1>Unpuzzler</h1>
+
+                    <div class="">
+                        <img src="{{image}}" class="w-100"/>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

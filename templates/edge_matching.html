@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+            <form action="/edge_matching/results" method="post" enctype="multipart/form-data" id="options-form">
+                <div class="row">
+                    <h1>Unpuzzler</h1>
+                    <h2 class="mb-5">Edge Matching</h2>
+
+                    <div class="mb-3 form-check form-switch">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Only Frame</label>
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" name="only-frame">
+                    </div>
+
+                    <!-- int -->
+                    <div class="mb-3 form-check">
+                        <label for="block-size-input">Block Size:</label>
+                        <input type="number" class="form-control" min="1" value="{{ options['block'] }}"
+                               name="block-size-input" id="block-size-input" placeholder="Enter block size">
+                    </div>
+
+                    <!-- int -->
+                    <div class="mb-3 form-check">
+                        <label for="k-size-Input">K Size:</label>
+                        <input type="number" class="form-control" min="1" value="{{ options['k_size'] }}"
+                               name="k-size-input" id="k-size-input" placeholder="Enter k size">
+                    </div>
+
+                    <!-- float -->
+                    <div class="mb-3 form-check">
+                        <label for="k-input">K:</label>
+                        <input type="number" class="form-control" min="0" step="0.001" value="{{ options['k'] }}"
+                               name="k-input" id="k-input" placeholder="Enter k">
+                    </div>
+
+                    <!-- float -->
+                    <div class="mb-3 form-check">
+                        <label for="area-mod-input">Area Mod:</label>
+                        <input type="number" class="form-control" min="0" max="1" step="0.001"
+                               value="{{ options['area_mod'] }}" name="area-mod-input" id="area-mod-input"
+                               placeholder="Enter area mod">
+                    </div>
+
+                    <!-- float -->
+                    <div class="mb-3 form-check">
+                        <label for="new-area-mod-input">New Area Mod:</label>
+                        <input type="number" class="form-control" min="0" max="1" step="0.001"
+                               value="{{ options['new_area_mod'] }}" name="new-area-mod-input" id="new-area-mod-input"
+                               placeholder="Enter new area mod">
+                    </div>
+
+                    <!-- int -->
+                    <div class="mb-3 form-check">
+                        <label for="inward-offset-input">Inward Offset:</label>
+                        <input type="number" class="form-control" min="0" value="{{ options['inward_offset'] }}"
+                               name="inward-offset-input" id="inward-offset-input" placeholder="Enter inward offset">
+                    </div>
+
+                    <!-- int -->
+                    <div class="mb-3 form-check">
+                        <label for="color-mod-input">Color Mod:</label>
+                        <input type="number" class="form-control" min="1" value="{{ options['color_mod'] }}"
+                               name="color-mod-input" id="color-mod-input" placeholder="Enter color mod">
+                    </div>
+
+                    <hr>
+                    <div class="my-3">
+                        <button type="submit" class="btn btn-primary float-end w-25">
+                            Weiter
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

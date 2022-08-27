@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+            <form action="/edge_matching" method="post" enctype="multipart/form-data" id="options-form">
+                <div class="row">
+                    <h1>Unpuzzler</h1>
+
+                    <div class="">
+                        <div class="d-flex flex-wrap">
+                            {% for img in images %}
+
+                            <img src="{{img}}" class="m-2 w-25 puzzle"/>
+
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="my-3">
+                        <button type="submit" class="btn btn-primary float-end w-25">
+                            Weiter
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

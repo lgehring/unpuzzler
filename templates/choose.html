@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <div class="d-flex justify-content-center">
+
+            <div class="row">
+                <h1>Unpuzzler</h1>
+
+                <form action="/choose" method="post" enctype="multipart/form-data" id="pieces-form">
+                    <div class="my-3">
+                        <select class="form-select" aria-label="Default select example" name="pieces_form"
+                                onchange="piecesOnChange()">
+                            {% for number in number_pieces %}
+                            {%set ind=index%}
+                            <option value={{loop.index0}}
+                                    {{
+                            "selected" if loop.index0 == ind else "" }}>{{number}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="my-3">
+                        <select class="form-select" aria-label="Default select example" name="option_form">
+                            {% for option in options %}
+                            <option value={{option}}>{{option}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <hr>
+
+                    <div class="">
+                        <button type="submit" class="btn btn-primary float-end w-25"
+                                formaction="/edge_detection/results">Weiter
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var piecesForm = document.getElementById("pieces-form");
+
+    function piecesOnChange() {
+        piecesForm.submit();
+    }
+
+</script>
+
+{% endblock %}
